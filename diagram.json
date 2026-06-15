@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "author": "Talha saqib",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0.6, "left": -0.6, "attrs": {} },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -118.8,
+      "left": 99.8,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": -43.2,
+      "left": 85.85,
+      "rotate": 90,
+      "attrs": { "value": "1000" }
+    },
+    { "type": "wokwi-ky-040", "id": "encoder1", "top": -123.1, "left": -68, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton-6mm",
+      "id": "btn1",
+      "top": -50.2,
+      "left": 268.8,
+      "attrs": { "color": "green", "xray": "1", "bounce": "0", "key": "b" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 24,
+      "left": 277.85,
+      "rotate": 90,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": 256,
+      "left": 53.6,
+      "attrs": { "pins": "i2c" }
+    }
+  ],
+  "connections": [
+    [ "r1:1", "led1:C", "green", [ "h0" ] ],
+    [ "r1:2", "uno:GND.1", "green", [ "h0" ] ],
+    [ "uno:5V", "encoder1:VCC", "red", [ "v10.1", "h-169.6", "v-220.8", "h67.2", "v-67.6" ] ],
+    [ "encoder1:GND", "uno:GND.1", "black", [ "v77.6", "h67.5" ] ],
+    [ "uno:6", "led1:A", "green", [ "v0" ] ],
+    [ "uno:GND.2", "r2:2", "black", [ "v19.7", "h137.7" ] ],
+    [ "btn1:2.r", "r2:1", "green", [ "h0" ] ],
+    [ "btn1:2.l", "uno:2", "green", [ "h0" ] ],
+    [ "btn1:1.r", "uno:3.3V", "green", [ "h20", "v268.8", "h-166.8" ] ],
+    [ "uno:5", "encoder1:DT", "green", [ "v0" ] ],
+    [ "encoder1:CLK", "uno:3", "green", [ "h0" ] ],
+    [ "encoder1:SW", "uno:7", "green", [ "h0" ] ],
+    [ "uno:A5", "lcd1:SCL", "green", [ "v57.5", "h-245.3", "v66.9" ] ],
+    [ "uno:A4", "lcd1:SDA", "green", [ "v47.9", "h-226.2", "v67" ] ],
+    [ "uno:5V", "lcd1:VCC", "red", [ "v19.1", "h-131.2", "v86.3" ] ],
+    [ "uno:GND.2", "lcd1:GND", "black", [ "v38.9", "h-131.1", "v57.6" ] ]
+  ],
+  "dependencies": {}
+}
