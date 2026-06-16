@@ -1,5 +1,28 @@
-# dc motor control
+# dc motor control with rotatory encoder and rpm dashboard
 <br>
-author-mohammed talha saqib
+**author**-mohammed talha saqib
 <br>
-Connections in circuit you can refer to this image: https://app.cirkitdesigner.com/project/8431a307-5f7d-46b4-b3eb-913d0a0616ab
+This is the project to control dc motor with rotatory encoder using non-blocking code(avoiding delay() function) and also measuring speed in rpm of dc motor displaying these on lcd display using I2C bus connection
+
+**Connections**: For connections in circuit you can refer to this image: https://app.cirkitdesigner.com/project/8431a307-5f7d-46b4-b3eb-913d0a0616ab or you can just look at circuit_image.png.
+One thing to notice is, we used external battery of 5V to feed current to dc motor. this is because it uses more current than the capacity of arduino uno especially when torque is applied.
+here we used logic mosfet (IRFL44n) in case if it is not available, then you can use IRFZ44n but you need to know that it will not fully open at 5V hence, better if used external 9V battery to open it. connections are simple, just use another transistor to open this mosfet.
+you can refer to circuit_image_2.png for connections for IRFZ44n mosfet. and refer to the line 22.
+We used I2C bus connections instead of connecting all those pins to arduino just to ensure easy connections and in expandable manner meaning we can easily connect more devices with I2C bus connections. Wire.h is used to manage this connection and LiquidCrystal_I2C uses this Wire.h library to send data from arduino to lcd display using I2C bus.
+
+**simulation**: To simulate this use wokwi and use diagram.json file which has all components and connections, upload the code and simulate, one thing to notice is instead of ir sensor, a button is used switch off the debounce for that button and by pressing it leads to the incoming pulse from ir sensor, hence with this you can simulate ir_sensor behaviour. Use this link to directly open simulation: https://wokwi.com/projects/466713752636656641 . but for real world-scenario use the circuit_image.png for connections.
+
+let's give a look at the code: 
+In code, dc_mtr_pin is used which is the pin at which pwm is performed and gate of mosfet is connected. which repeatedly opens and closes the connection between source and drain to change the speed of motor.
+clk and dt pins are used to detect how much encoder is rotated and it is the general way to calculate it's direction and rotation.
+pulse pin is the one which actually from ir_sensor which generates high pulse whenever any object is detected, here we are using IR sensor to detect number of rotations. to measure this, a disc is connected to one arm of this dc motor(tt gear motor) and other arm is connected to that entity which we has to spin. now, this disc (small of radius nearly 1" or 1.5") is painted black on half part and white on other half. this variation causes the generation of pulses by ir sensor. which is then calculated by arduino to measure the current speed of dc motor.
+here, you can also simply use a motor with encoder which also generates pulses but no. of pulses in one rotation changes, hence change the variable num_pulses. You can find this in specifications sheet of encoder from manufaturer.
+sw pin is used to switch backlight of lcd and this happens by clinking the knob of rotatory encoder.
+This whole code is non-blocking code. delay is not used to manage the debounce of sw pin while clicking in real-world scenario. instead `millis()` function is used to handle that debounce. It is easily understood that, tb_flg variable is used just to keep track on what to do. Like if it is 0 it means that sw pin is low or whenever sw pin becomes low this variable becomes 0. 1 is the state when tb variable stored the millis() value in milliseconds, this is important so that every loop should not just modify that tb value. 2 is the state at which the backlight is switched from one state to another(after 50ms) but still the button is pressed, when this button is released(nearly 200 to 300 milliseconds for average click) or sw value goes to low, at that time this state changes to 0.
+# IRFZ44n
+for this you need to follow the circuit in circuit_image_2.png also .svg file is attached for better resolution. in that some things to be noted is, the logic used in this circuit is inversion because of extra transistor. Simply connecting transistor between 9V and gnd does not works because the voltage difference between base and emitter is 0.7V If connected simply in between 9V and gnd causes emitter to stay at 4.3V which will not fully open mosfet gate. To obtain 9V at mosfet gate external battery is used and that same battery powers dc motor after dropping the voltage using buck converter, it should set in such a way that buck converter should output between 3 to 6V.
+Note: writing in pin 6 should be changed, because when this is pin goes high dc motor stops and when it get's low dc motor starts spinning. Hence replace `analogWrite(dc_mtr_pin,enc_val);` with `analogWrite(dc_mtr_pin,255-enc_val);` also include `digitalWrite(dc_mtr_pin,1);` in setup and ensure that it is below this line `pinMode(dc_mtr_pin,OUTPUT);`
+**some important points to remember in real world**:
+Ground of buck converter, external battery and arduino should be connected at one point.
+Resistors used in circuit should be compulsarily used for safety of components.
+Diode at motor side should be used and that diode will handle the spike of current in opposite direction due to emf generation when the motor stops spinning.

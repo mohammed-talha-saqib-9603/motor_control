@@ -15,10 +15,11 @@ byte pre_enc_val=0;  // previous value of encoder
 volatile byte enc_val=0;  //encoder value
 volatile int ir_pulse_val=0; //no. of pulses from IR sensor
 byte cur_dt,cur_clk; //current status of data and clock pins
-int speed=0; //speed of dc motor measured with Ir sensor
+unsigned int speed=0; //speed of dc motor measured with Ir sensor
 bool backlight_on=false; //is backlight switched on
 bool cur_sw=0; //current status of sw
 byte tb_flg=0; //debounce time flag
+uint16_t num_pulses=1; //number of pulses per rotation in encoder of dc motor, follow README.md file
 
 void ir_pulse(){
   ir_pulse_val++;
@@ -42,6 +43,7 @@ void setup() {
   pinMode(clk,INPUT);
   pinMode(dt,INPUT);
   pinMode(pulse, INPUT);
+  pinMode(sw, INPUT_PULLUP);
 
   lcd.init();
   lcd.backlight();
@@ -90,7 +92,7 @@ void loop() {
   }
   if(millis()-t1>=1000){
     noInterrupts();
-    speed=ir_pulse_val*60;
+    speed=ir_pulse_val*60UL/num_pulses;
     ir_pulse_val=0;
     interrupts();
     t1=millis();
