@@ -3,11 +3,11 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-#define dc_mtr_pin 6
-#define clk 3
-#define dt 5
-#define pulse 2
-#define sw 7
+#define dc_mtr_pin 6   //gate of mosfet
+#define clk 3   //clock pin from encoder
+#define dt 5    //data pin from encoder
+#define pulse 2  //pulse pin digital out from IR sensor
+#define sw 7     //switch of encoder
 
 unsigned long t1=0;  //time start for calculating rpm
 unsigned long tb = 0; // debounce time start
@@ -58,7 +58,7 @@ void setup() {
 void loop() {
 
   if(pre_enc_val!=enc_val){
-    analogWrite(dc_mtr_pin,enc_val);
+    analogWrite(dc_mtr_pin,enc_val);    //PWM starts
     Serial.println("encoder:");
     Serial.println(enc_val);
     Serial.println("speed:");
